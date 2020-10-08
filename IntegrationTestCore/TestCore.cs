@@ -24,6 +24,16 @@ namespace IntegrationTestCore
             await data.RunAsync(client, scope);
             await data.CheckAsync();
         }
+        public new TestCore<TStartup> WithTestServices(Action<IServiceCollection> action)
+        {
+            base.WithTestServices(action);
+            return this;
+        }
+        public TestCore WithConfiguration(Action<IConfigurationBuilder> action)
+        {
+            base.WithConfiguration(action);
+            return this;
+        }
     }
 
 
