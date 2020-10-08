@@ -1,5 +1,14 @@
 # Change Log
 
+## V0.2.2
+### Added
+TestCore.RunAsync
+
+## V0.2.1
+### Added
+TestCore<T>.WithTestServices
+TestCore<T>.WithConfiguration
+
 ## V0.2.0
 ### Added
 ConfigurationBuilderExtensions.Remove

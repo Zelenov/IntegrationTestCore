@@ -17,7 +17,7 @@ namespace IntegrationTestCore
     {
         public virtual WebApplicationFactory<TStartup> Factory => new WebApplicationFactoryHelper<TStartup>(this);
 
-        public virtual async Task RunAsync(ITestRunData data)
+        public override async Task RunAsync(ITestRunData data)
         {
             using var client = Factory.CreateClient();
             using IServiceScope scope = Factory.Server.Host.Services.CreateScope();
@@ -29,7 +29,7 @@ namespace IntegrationTestCore
             base.WithTestServices(action);
             return this;
         }
-        public TestCore WithConfiguration(Action<IConfigurationBuilder> action)
+        public TestCore<TStartup> WithConfiguration(Action<IConfigurationBuilder> action)
         {
             base.WithConfiguration(action);
             return this;
@@ -37,11 +37,12 @@ namespace IntegrationTestCore
     }
 
 
-    public class TestCore
+    public abstract class TestCore
     {
         protected readonly List<Action<IServiceCollection>> TestServices = new List<Action<IServiceCollection>>();
         protected readonly List<Action<IConfigurationBuilder>> TestConfig = new List<Action<IConfigurationBuilder>>();
-        
+
+        public abstract Task RunAsync(ITestRunData data);
         public TestCore WithTestServices(Action<IServiceCollection> action)
         {
             TestServices.Add(action);
