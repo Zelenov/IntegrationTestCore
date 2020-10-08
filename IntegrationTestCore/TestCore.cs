@@ -17,9 +17,6 @@ namespace IntegrationTestCore
     {
         public virtual WebApplicationFactory<TStartup> Factory => new WebApplicationFactoryHelper<TStartup>(this);
 
-        public TestCore(Action<IServiceCollection> testServices = null, Action<IConfigurationBuilder> config = null) : base(testServices, config)
-        {
-        }
         public virtual async Task RunAsync(ITestRunData data)
         {
             using var client = Factory.CreateClient();
@@ -32,22 +29,32 @@ namespace IntegrationTestCore
 
     public class TestCore
     {
-        protected Action<IServiceCollection> TestServices;
-        protected Action<IConfigurationBuilder> TestConfig;
-
-        public TestCore(Action<IServiceCollection> testServices = null, Action<IConfigurationBuilder> config = null)
+        protected readonly List<Action<IServiceCollection>> TestServices = new List<Action<IServiceCollection>>();
+        protected readonly List<Action<IConfigurationBuilder>> TestConfig = new List<Action<IConfigurationBuilder>>();
+        
+        public TestCore WithTestServices(Action<IServiceCollection> action)
         {
-            TestServices = testServices;
-            TestConfig = config;
+            TestServices.Add(action);
+            return this;
         }
-
-        public void ConfigureTestServices(IServiceCollection services)
+        public TestCore WithConfiguration(Action<IConfigurationBuilder> action)
         {
-            TestServices?.Invoke(services);
+            TestConfig.Add(action);
+            return this;
         }
-        public virtual void ConfigureAppConfiguration(IConfigurationBuilder config)
+        internal void ConfigureTestServices(IServiceCollection services)
         {
-            TestConfig?.Invoke(config);
+            foreach (var testService in TestServices)
+            {
+                testService?.Invoke(services);
+            }
+        }
+        internal void ConfigureAppConfiguration(IConfigurationBuilder config)
+        {
+            foreach (var testConfig in TestConfig)
+            {
+                testConfig?.Invoke(config);
+            }
         }
 
 

@@ -1,5 +1,12 @@
-## Change Log
+# Change Log
 
-### V0.1.0
+## V0.2.0
+### Added
+ConfigurationBuilderExtensions.Remove
+ConfigurationBuilderExtensions.RemoveWhere
+TestCore.WithTestServices
+TestCore.WithConfiguration
+
+## V0.1.0
 
 First public version
