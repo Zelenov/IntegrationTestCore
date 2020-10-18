@@ -30,7 +30,7 @@ namespace IntegrationTestCore
 
         protected virtual void LogResponse()
         {
-            Console.WriteLine(Diff.Text(ExpectedResponse.GetNormalizedBody() ?? "-", ActualResponse.GetNormalizedBody()?? "-"));
+            Console.WriteLine(Diff.Text(ExpectedResponse?.GetNormalizedBody() ?? "-", ActualResponse?.GetNormalizedBody()?? "-"));
             Console.WriteLine("RESPONSE");
             Console.WriteLine("ACTUAL");
             Console.WriteLine(SerializeHttpResponseMessage(ActualResponse));
@@ -40,14 +40,18 @@ namespace IntegrationTestCore
 
         public virtual string SerializeHttpResponseMessage(HttpResponseMessage httpResponseMessage)
         {
+            if (httpResponseMessage == null)
+                return "EMPTY RESPONSE";
             return 
                 string.Join(Environment.NewLine, 
-                    $"STATUS: {httpResponseMessage.StatusCode}",
+                    $"STATUS: {httpResponseMessage?.StatusCode}",
                     $"HEADERS: {string.Join(Environment.NewLine, httpResponseMessage.GetHeaders().Select(h => $"{h.Key}: {string.Join((string) ", ", (IEnumerable<string>) h.Value)}"))}",
                     $"{httpResponseMessage.GetBody()}");
         }
         public virtual string SerializeHttpRequestMessage(HttpRequestMessage httpRequestMessage)
         {
+            if (httpRequestMessage == null)
+                return "EMPTY REQUEST";
             return string.Join(Environment.NewLine, $"URL: {httpRequestMessage.GetUrl()}",
                 $"HEADERS: {string.Join(Environment.NewLine, httpRequestMessage.Headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}"))}",
                 httpRequestMessage.GetBody());
