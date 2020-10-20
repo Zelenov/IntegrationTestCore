@@ -44,7 +44,7 @@ namespace IntegrationTestCore
                 return "EMPTY RESPONSE";
             return 
                 string.Join(Environment.NewLine, 
-                    $"STATUS: {httpResponseMessage?.StatusCode}",
+                    $"STATUS: {httpResponseMessage.StatusCode}",
                     $"HEADERS: {string.Join(Environment.NewLine, httpResponseMessage.GetHeaders().Select(h => $"{h.Key}: {string.Join((string) ", ", (IEnumerable<string>) h.Value)}"))}",
                     $"{httpResponseMessage.GetBody()}");
         }

@@ -13,7 +13,7 @@ namespace IntegrationTestCore
     {
         public abstract Task RunAsync(HttpClient client, IServiceScope scope);
 
-        public Task CheckAsync() => Task.CompletedTask;
+        public virtual Task CheckAsync() => Task.CompletedTask;
     }
 
     public class ServiceRunData<T> : ServiceRunData
