@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Xml.Linq;
 using Newtonsoft.Json;
 
 namespace IntegrationTestCore
@@ -43,6 +44,20 @@ namespace IntegrationTestCore
         {
             var serialize =
                 new Func<T, string>(o => o == null ? "-" : JsonConvert.SerializeObject(o, Formatting.Indented));
+
+            var c1 = serialize(expected);
+            var c2 = serialize(actual);
+            var c0 = LineByLineOutput.DiffTexts(c1, c2);
+            var columns = new[] { c0, c1, c2 };
+            var s = LineByLineOutput.CombineLineByLine(" ", columns);
+            if (string.IsNullOrEmpty(s))
+                s = "-";
+            return s;
+        }
+        public static string Xml(string expected, string actual)
+        {
+            var serialize =
+                new Func<T, string>(o => o == null ? "-" : XDocument.Parse(o).ToString(SaveOptions.None));
 
             var c1 = serialize(expected);
             var c2 = serialize(actual);

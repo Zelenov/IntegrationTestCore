@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using IServiceCollection = Microsoft.Extensions.DependencyInjection.IServiceCollection;
 
@@ -34,6 +35,11 @@ namespace IntegrationTestCore
             base.WithConfiguration(action);
             return this;
         }
+        public TestCore<TStartup> WithLogging(Action<ILoggingBuilder> action)
+        {
+            base.WithLogging(action);
+            return this;
+        }
     }
 
 
@@ -41,6 +47,7 @@ namespace IntegrationTestCore
     {
         protected readonly List<Action<IServiceCollection>> TestServices = new List<Action<IServiceCollection>>();
         protected readonly List<Action<IConfigurationBuilder>> TestConfig = new List<Action<IConfigurationBuilder>>();
+        protected readonly List<Action<ILoggingBuilder>> TestLogging = new List<Action<ILoggingBuilder>>();
 
         public abstract Task RunAsync(ITestRunData data);
         public TestCore WithTestServices(Action<IServiceCollection> action)
@@ -51,6 +58,11 @@ namespace IntegrationTestCore
         public TestCore WithConfiguration(Action<IConfigurationBuilder> action)
         {
             TestConfig.Add(action);
+            return this;
+        }
+        public TestCore WithLogging(Action<ILoggingBuilder> action)
+        {
+            TestLogging.Add(action);
             return this;
         }
         internal void ConfigureTestServices(IServiceCollection services)
@@ -69,5 +81,12 @@ namespace IntegrationTestCore
         }
 
 
+        internal void ConfigureLogging(ILoggingBuilder services)
+        {
+            foreach (var testLogging in TestLogging)
+            {
+                testLogging?.Invoke(services);
+            }
+        }
     }
 }

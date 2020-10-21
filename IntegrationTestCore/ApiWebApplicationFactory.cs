@@ -21,6 +21,10 @@ namespace IntegrationTestCore
             {
                 TestCore.ConfigureTestServices(services);
             });
+            builder.ConfigureLogging(services =>
+            {
+                TestCore.ConfigureLogging(services);
+            });
         }
     }
 }

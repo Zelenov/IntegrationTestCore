@@ -1,5 +1,9 @@
 # Change Log
 
+## V0.2.4
+### Added
+TestCore.WithLogging
+
 ## V0.2.3
 ### Added
 ServiceRunData.CheckAsync
