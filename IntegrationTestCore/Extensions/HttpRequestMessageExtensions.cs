@@ -120,10 +120,6 @@ namespace IntegrationTestCore
             self.Version = version;
             return self;
         }
-        public static HttpRequestMessage WithVersion(this HttpRequestMessage self, string versionStr)
-        {
-            return self.WithVersion(new Version(versionStr));
-        }
         public static HttpRequestMessage WithHeaders(this HttpRequestMessage self, IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers)
         {
             foreach (var header in headers)
