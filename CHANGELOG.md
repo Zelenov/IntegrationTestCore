@@ -1,5 +1,9 @@
 # Change Log
 
+## V0.3.1
+### Fixed
+Formatting.Indented
+
 ## V0.3.0
 ### Added
 No more test core

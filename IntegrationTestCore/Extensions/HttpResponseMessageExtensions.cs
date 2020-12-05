@@ -82,7 +82,7 @@ namespace IntegrationTestCore
         }
         public static string Serialize(this HttpResponseMessage self, bool normalized = false)
         {
-            return JsonConvert.SerializeObject(new SerializableHttpResponseMessage(self, normalized));
+            return JsonConvert.SerializeObject(new SerializableHttpResponseMessage(self, normalized), Formatting.Indented);
         }
 
         internal sealed class SerializableHttpResponseMessage
