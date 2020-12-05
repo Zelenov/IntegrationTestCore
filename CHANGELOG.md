@@ -1,5 +1,11 @@
 # Change Log
 
+## V0.3.0
+### Added
+No more test core
+HttpContentEqualityComparer
+HttpResponseMessageEqualityComparer
+
 ## V0.2.4
 ### Added
 TestCore.WithLogging

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -107,11 +108,36 @@ namespace IntegrationTestCore
                 res.WithJsonBody(body);
             return res;
         }
-
+        
         public static HttpRequestMessage WithMethod(this HttpRequestMessage self, string methodName)
         {
             var method = new HttpMethod(methodName);
             self.Method = method;
+            return self;
+        }
+        public static HttpRequestMessage WithVersion(this HttpRequestMessage self, Version version)
+        {
+            self.Version = version;
+            return self;
+        }
+        public static HttpRequestMessage WithVersion(this HttpRequestMessage self, string versionStr)
+        {
+            return self.WithVersion(new Version(versionStr));
+        }
+        public static HttpRequestMessage WithHeaders(this HttpRequestMessage self, IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers)
+        {
+            foreach (var header in headers)
+            {
+                self.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+            return self;
+        }
+        public static HttpRequestMessage WithHeaders(this HttpRequestMessage self, IEnumerable<KeyValuePair<string, string>> headers)
+        {
+            foreach (var header in headers)
+            {
+                self.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
             return self;
         }
         public static HttpRequestMessage WithMethod(this HttpRequestMessage self, HttpMethod method)
@@ -133,6 +159,28 @@ namespace IntegrationTestCore
         {
             self.Content = new StringContent(body, Encoding.UTF8, "application/xml");
             return self;
+        }
+        public static string Serialize(this HttpRequestMessage self, bool normalized = false)
+        {
+            return JsonConvert.SerializeObject(new SerializableHttpRequestMessage(self, normalized));
+        }
+
+        internal sealed class SerializableHttpRequestMessage
+        {
+            public Version Version { get; }
+            public string Content { get; }
+            public HttpMethod Method { get; }
+            public Uri RequestUri { get; }
+            public IEnumerable<KeyValuePair<string, IEnumerable<string>>> Headers { get; }
+
+            public SerializableHttpRequestMessage(HttpRequestMessage message, bool normalized)
+            {
+                Version = message.Version;
+                Content = normalized ? message.GetNormalizedBody() : message.GetBody();
+                Method = message.Method;
+                RequestUri = message.RequestUri;
+                Headers = message.Headers;
+            }
         }
     }
 }

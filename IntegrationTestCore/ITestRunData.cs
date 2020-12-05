@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IntegrationTestCore
 {
-    public interface ITestRunData 
+    public interface ITestRunData
     {
-        Task RunAsync(HttpClient client, IServiceScope scope);
         Task CheckAsync();
+        Task RunAsync(ITestStage client);
     }
 }

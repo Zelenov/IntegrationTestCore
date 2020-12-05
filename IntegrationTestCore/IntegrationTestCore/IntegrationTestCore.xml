@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<doc>
-    <assembly>
-        <name>IntegrationTestCore</name>
-    </assembly>
-    <members>
-        <!-- Badly formed XML comment ignored for member "M:IntegrationTestCore.ConfigurationBuilderExtensions.WithLocalJsonFile(Microsoft.Extensions.Configuration.IConfigurationBuilder,System.String)" -->
-    </members>
-</doc>

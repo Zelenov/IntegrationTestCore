@@ -4,12 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Formatting = Newtonsoft.Json.Formatting;
+#pragma warning disable 1591
 
 namespace IntegrationTestCore
 {
@@ -77,6 +80,29 @@ namespace IntegrationTestCore
         {
             return self?.Content?.ReadAsStringAsync().GetAwaiter().GetResult();
         }
+        public static string Serialize(this HttpResponseMessage self, bool normalized = false)
+        {
+            return JsonConvert.SerializeObject(new SerializableHttpResponseMessage(self, normalized));
+        }
+
+        internal sealed class SerializableHttpResponseMessage
+        {
+            public string Content { get; }
+            public IEnumerable<KeyValuePair<string, IEnumerable<string>>> Headers { get; }
+            public string ReasonPhrase { get; }
+            public HttpStatusCode StatusCode { get; }
+            public Version Version { get; }
+
+            public SerializableHttpResponseMessage(HttpResponseMessage message, bool normalized)
+            {
+                Content = normalized ? message.GetNormalizedBody() : message.GetBody();
+                Headers = message.Headers;
+                ReasonPhrase = message.ReasonPhrase;
+                StatusCode = message.StatusCode;
+                Version = message.Version;
+            }
+        }
+
         public static string GetNormalizedBody(this HttpResponseMessage self)
         {
             var body = GetBody(self);
@@ -141,6 +167,36 @@ namespace IntegrationTestCore
         public static HttpResponseMessage WithStatusCode(this HttpResponseMessage self, int statusCode)
         {
             return self.WithStatusCode((HttpStatusCode)statusCode);
+        }
+        public static HttpResponseMessage WithReasonPhrase(this HttpResponseMessage self, string reasonPhrase)
+        {
+            self.ReasonPhrase = reasonPhrase;
+            return self;
+        }
+        public static HttpRequestMessage WithHeaders(this HttpRequestMessage self, IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers)
+        {
+            foreach (var header in headers)
+            {
+                self.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+            return self;
+        }
+        public static HttpRequestMessage WithVersion(this HttpRequestMessage self, Version version)
+        {
+            self.Version = version;
+            return self;
+        }
+        public static HttpRequestMessage WithVersion(this HttpRequestMessage self, string versionStr)
+        {
+            return self.WithVersion(new Version(versionStr));
+        }
+        public static HttpRequestMessage WithHeaders(this HttpRequestMessage self, IEnumerable<KeyValuePair<string, string>> headers)
+        {
+            foreach (var header in headers)
+            {
+                self.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+            return self;
         }
         public static HttpResponseMessage WithStatusCode(this HttpResponseMessage self, string statusCode)
         {
